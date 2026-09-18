@@ -91,3 +91,18 @@ class TestSimulation(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestReplay(unittest.TestCase):
+    def test_replay_reconstructs_book_state(self):
+        import random
+        from lob.agents import MarketMaker, NoiseTrader
+        from lob.replay import replay, state_fingerprint
+        from lob.sim import Simulation
+
+        rng = random.Random(5)
+        sim = Simulation([MarketMaker(rng), NoiseTrader(rng)], seed=5)
+        sim.run(200)
+        rebuilt = replay(sim.book.events)
+        self.assertEqual(state_fingerprint(sim.book), state_fingerprint(rebuilt))
+        self.assertEqual(len(sim.book.trades), len(rebuilt.trades))
