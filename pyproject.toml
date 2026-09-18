@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "order-book-sim"
+version = "0.1.0"
+description = "Dependency-free limit order book simulator with stochastic order-flow agents"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.9"
+authors = [{name = "Pablo Garcia Ardid"}]
+keywords = ["limit-order-book", "market-microstructure", "simulation", "trading"]
+
+[project.optional-dependencies]
+plot = ["matplotlib"]
+
+[tool.setuptools]
+packages = ["lob"]
