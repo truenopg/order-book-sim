@@ -23,6 +23,8 @@ class Simulation:
         self.reference_price = reference_price
         self.agents = agents
         self.mid_history: List[float] = []
+        self.trade_steps: List[int] = []  # step index for each trade, in trade order
+        self._step = 0
         self._seed_book()
 
     @property
@@ -36,11 +38,14 @@ class Simulation:
             self.book.add_limit_order(Side.SELL, round(self.reference_price + offset, 4), qty)
 
     def step(self) -> None:
+        before = len(self.book.trades)
         for agent in self.agents:
             agent.act(self)
+        self.trade_steps.extend([self._step] * (len(self.book.trades) - before))
         mid = self.mid
         if mid is not None:
             self.mid_history.append(mid)
+        self._step += 1
 
     def run(self, steps: int) -> None:
         for _ in range(steps):

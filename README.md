@@ -46,15 +46,16 @@ trades             2801
 final mid          99.1597
 spread mean/min/max 0.0317 / 0.0019 / 0.0600
 realized vol/step  0.000962
-signed impact (r)  -0.021
+signed impact (r)  -0.133
 book imbalance     -0.043
 ```
 
-The slightly negative signed impact is a real property of this toy world, not
+The clearly negative signed impact is a real property of this toy world, not
 a bug: with a market maker re-quoting around the mid every step, aggressive
 flow mean-reverts quickly, so trade sign anti-predicts the next move at short
-lags. Weakening the market maker flips it positive - which is itself the kind
-of experiment this repo is for.
+lags. (Exact per-step trade timing makes the reversal show up even more
+strongly than coarse event-log interpolation.) Weakening the market maker
+flips it positive - which is itself the kind of experiment this repo is for.
 
 ## Layout
 

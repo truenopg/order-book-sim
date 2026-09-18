@@ -51,7 +51,7 @@ def main() -> None:
     ss = sampled_spreads(spreads)
     print(f"spread mean/min/max {ss['mean']:.4f} / {ss['min']:.4f} / {ss['max']:.4f}")
     print(f"realized vol/step  {realized_volatility(sim.mid_history):.6f}")
-    print(f"signed impact (r)  {signed_impact(book, sim.mid_history):.3f}")
+    print(f"signed impact (r)  {signed_impact(book, sim.mid_history, trade_steps=sim.trade_steps):.3f}")
     imb = book.imbalance()
     print(f"book imbalance     {imb:.3f}" if imb is not None else "book imbalance     n/a")
 

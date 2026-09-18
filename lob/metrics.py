@@ -45,22 +45,24 @@ def sampled_spreads(samples: List[float]) -> Dict[str, float]:
     }
 
 
-def signed_impact(book: LimitOrderBook, mid_history: List[float], lag: int = 5) -> float:
+def signed_impact(book: LimitOrderBook, mid_history: List[float], lag: int = 5,
+                  trade_steps: List[int] = None) -> float:
     """Rough price-impact proxy: correlation between trade sign and the
     mid-price move over the next ``lag`` recorded mids.
 
     Trade sign is +1 for a buyer-initiated trade. Returns Pearson r in
     [-1, 1]; a clearly positive value is what real impact looks like.
+    Pass ``Simulation.trade_steps`` for exact timing; without it the trade
+    time is interpolated from the event sequence (cruder).
     """
     if not book.trades or len(mid_history) < lag + 2:
         return 0.0
-    # Pair each trade (in order) with the mid move lag steps later, using the
-    # trade's position in the event sequence as an approximate time index.
     n = len(mid_history)
     xs: List[float] = []
     ys: List[float] = []
-    step_of_trade = _trade_step_indices(book, n)
-    for trade, idx in zip(book.trades, step_of_trade):
+    if trade_steps is None:
+        trade_steps = _trade_step_indices(book, n)
+    for trade, idx in zip(book.trades, trade_steps):
         j = idx + lag
         if j >= n:
             break
