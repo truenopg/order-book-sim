@@ -54,8 +54,21 @@ The clearly negative signed impact is a real property of this toy world, not
 a bug: with a market maker re-quoting around the mid every step, aggressive
 flow mean-reverts quickly, so trade sign anti-predicts the next move at short
 lags. (Exact per-step trade timing makes the reversal show up even more
-strongly than coarse event-log interpolation.) Weakening the market maker
-flips it positive - which is itself the kind of experiment this repo is for.
+strongly than coarse event-log interpolation.)
+
+`examples/mm_strength_experiment.py` varies the market maker's requote
+probability and shows the flip directly:
+
+```
+MM requote p   trades   vol/step  impact r
+        1.00     2244   0.001107    -0.003
+        0.70     2147   0.000039     0.039
+        0.40     2124   0.000043     0.089
+        0.15     2130   0.000031     0.139
+```
+
+A market maker glued to the mid erases impact; a weaker one lets aggressive
+flow move the price persistently - which is what real impact looks like.
 
 ## Layout
 
@@ -70,7 +83,7 @@ tests/           unittest suite
 
 ## Roadmap
 
-- Replay tool: reconstruct the book from an event log file
+- Replay from a saved event-log file (the replay engine exists; file I/O next)
 - LOBSTER/ITCH message import for real-data replay
 - Latency and queue-position modelling
 - More agent types (informed trader, spoofing/quote-stuffing stress tests)

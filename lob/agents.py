@@ -58,15 +58,19 @@ class MarketMaker(Agent):
     """
 
     def __init__(self, rng: random.Random, half_spread_ticks: float = 2.0,
-                 levels: int = 2, quote_qty: int = 15) -> None:
+                 levels: int = 2, quote_qty: int = 15,
+                 requote_prob: float = 1.0) -> None:
         super().__init__(rng)
         self.half_spread_ticks = half_spread_ticks
         self.levels = levels
         self.quote_qty = quote_qty
+        self.requote_prob = requote_prob  # < 1 weakens the MM's grip on the mid
         self.inventory = 0
         self._resting: list[int] = []
 
     def act(self, sim: "Simulation") -> None:
+        if self.rng.random() > self.requote_prob:
+            return
         book = sim.book
         old_quotes = set(self._resting)
         for oid in old_quotes:
