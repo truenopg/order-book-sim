@@ -88,3 +88,23 @@ def _trade_step_indices(book: LimitOrderBook, n: int) -> List[int]:
         return []
     last_seq = book.events[-1].seq or 1
     return [min(n - 1, int(t.seq / last_seq * (n - 1))) for t in book.trades]
+
+
+def signal_correlation(signals: List[float], mid_history: List[float], lag: int = 5) -> float:
+    """Pearson correlation between a per-step signal at t and the mid-price
+    change from t to t+lag. The classic use is order-book imbalance as the
+    signal: a positive value means the book leans the way the price moves."""
+    n = len(mid_history)
+    m = min(len(signals), n - lag)
+    if m < 3:
+        return 0.0
+    xs = signals[:m]
+    ys = [mid_history[i + lag] - mid_history[i] for i in range(m)]
+    mx = sum(xs) / m
+    my = sum(ys) / m
+    cov = sum((x - mx) * (y - my) for x, y in zip(xs, ys))
+    vx = sum((x - mx) ** 2 for x in xs)
+    vy = sum((y - my) ** 2 for y in ys)
+    if vx == 0 or vy == 0:
+        return 0.0
+    return cov / math.sqrt(vx * vy)

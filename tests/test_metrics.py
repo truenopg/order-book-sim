@@ -41,3 +41,16 @@ class TestSampledSpreads(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestSignalCorrelation(unittest.TestCase):
+    def test_perfect_signal(self):
+        from lob.metrics import signal_correlation
+        # signal at t equals the mid move t -> t+1 exactly
+        mid = [100.0, 101.0, 99.0, 102.0]
+        signals = [1.0, -2.0, 3.0, 0.0]
+        self.assertAlmostEqual(signal_correlation(signals, mid, lag=1), 1.0)
+
+    def test_constant_inputs(self):
+        from lob.metrics import signal_correlation
+        self.assertEqual(signal_correlation([0.0] * 10, [100.0] * 10), 0.0)

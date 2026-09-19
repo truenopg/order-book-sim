@@ -70,6 +70,11 @@ MM requote p   trades   vol/step  impact r
 A market maker glued to the mid erases impact; a weaker one lets aggressive
 flow move the price persistently - which is what real impact looks like.
 
+`examples/imbalance_signal_experiment.py` asks whether top-of-book imbalance
+predicts the next mid move. In this agent mix it does not (r ~ 0 at every
+lag): with no informed flow, imbalance is just noise. That null result is the
+motivation for adding an informed-trader agent.
+
 ## Layout
 
 ```
@@ -86,7 +91,8 @@ tests/           unittest suite
 - Replay from a saved event-log file (the replay engine exists; file I/O next)
 - LOBSTER/ITCH message import for real-data replay
 - Latency and queue-position modelling
-- More agent types (informed trader, spoofing/quote-stuffing stress tests)
+- Informed-trader agent (should make imbalance predictive - see the null result above)
+- Spoofing/quote-stuffing stress tests
 
 ## License
 
