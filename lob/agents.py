@@ -116,3 +116,36 @@ class MomentumTrader(Agent):
         side = Side.BUY if move > 0 else Side.SELL
         qty = max(1, min(self.max_qty, int(abs(move) * 500)))
         sim.book.add_market_order(side, qty)
+
+
+class InformedTrader(Agent):
+    """Knows a fundamental value the rest of the market cannot see.
+
+    The fundamental follows a random walk. When the mid deviates from it by
+    more than ``threshold_ticks``, the trader aggressively pushes the price
+    back toward fair value with market orders. This is the flow that makes
+    book imbalance informative: the informed trader consumes one side of the
+    book before the mid follows.
+    """
+
+    def __init__(self, rng: random.Random, start_value: float = 100.0,
+                 drift_vol: float = 0.005, threshold_ticks: float = 3.0,
+                 arrival_prob: float = 0.5, max_qty: int = 30) -> None:
+        super().__init__(rng)
+        self.true_value = start_value
+        self.drift_vol = drift_vol
+        self.threshold_ticks = threshold_ticks
+        self.arrival_prob = arrival_prob
+        self.max_qty = max_qty
+
+    def act(self, sim: "Simulation") -> None:
+        self.true_value += self.rng.gauss(0.0, self.drift_vol)
+        if self.rng.random() > self.arrival_prob or sim.mid is None:
+            return
+        gap = self.true_value - sim.mid
+        threshold = self.threshold_ticks * sim.book.tick_size
+        if abs(gap) < threshold:
+            return
+        side = Side.BUY if gap > 0 else Side.SELL
+        qty = max(1, min(self.max_qty, int(abs(gap) / sim.book.tick_size * 5)))
+        sim.book.add_market_order(side, qty)

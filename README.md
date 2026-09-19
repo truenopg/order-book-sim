@@ -14,6 +14,8 @@ from simple order-flow rules.
     against its inventory.
   - `NoiseTrader` sends random market and limit orders with heavy-tailed sizes.
   - `MomentumTrader` trades in the direction of the recent mid-price move.
+  - `InformedTrader` knows a random-walk fundamental value and pushes the
+    price toward it when the mid drifts too far.
 - **Replayable event log**: every order, cancel, and trade is recorded, so any
   run can be reconstructed exactly.
 - **Microstructure metrics**: spread distribution, realized volatility, book
@@ -71,9 +73,18 @@ A market maker glued to the mid erases impact; a weaker one lets aggressive
 flow move the price persistently - which is what real impact looks like.
 
 `examples/imbalance_signal_experiment.py` asks whether top-of-book imbalance
-predicts the next mid move. In this agent mix it does not (r ~ 0 at every
-lag): with no informed flow, imbalance is just noise. That null result is the
-motivation for adding an informed-trader agent.
+predicts the next mid move. Without informed flow it does not (r ~ 0 at every
+lag). Add an `InformedTrader` and the signal appears, matching what real
+markets show:
+
+```
+lag    no informed     informed
+  1        +0.004        +0.068
+  3        +0.001        +0.079
+  5        -0.008        +0.093
+ 10        +0.003        +0.093
+ 25        +0.001        +0.089
+```
 
 ## Layout
 
@@ -91,7 +102,6 @@ tests/           unittest suite
 - Replay from a saved event-log file (the replay engine exists; file I/O next)
 - LOBSTER/ITCH message import for real-data replay
 - Latency and queue-position modelling
-- Informed-trader agent (should make imbalance predictive - see the null result above)
 - Spoofing/quote-stuffing stress tests
 
 ## License
