@@ -28,13 +28,6 @@ def realized_volatility(mid_history: List[float], annualize: bool = False,
     return vol * math.sqrt(steps_per_year) if annualize else vol
 
 
-def spread_stats(book: LimitOrderBook) -> Dict[str, float]:
-    """Spread summary over the full event history is not kept; this samples
-    the current book. Use ``sampled_spreads`` during a run for time stats."""
-    spread = book.spread
-    return {"current_spread": spread if spread is not None else float("nan")}
-
-
 def sampled_spreads(samples: List[float]) -> Dict[str, float]:
     if not samples:
         return {"mean": float("nan"), "min": float("nan"), "max": float("nan")}
