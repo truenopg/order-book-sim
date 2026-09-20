@@ -29,6 +29,16 @@ def replay(events: Iterable[Event], tick_size: float = 0.01) -> LimitOrderBook:
     return book
 
 
+def events_to_jsonl(events: Iterable[Event], path: str) -> int:
+    """Write events one JSON object per line; returns the count written."""
+    n = 0
+    with open(path, "w") as fh:
+        for ev in events:
+            fh.write(json.dumps({"seq": ev.seq, "kind": ev.kind, "detail": ev.detail}) + "\n")
+            n += 1
+    return n
+
+
 def events_from_jsonl(path: str) -> List[Event]:
     """Load an event log written one JSON object per line."""
     events: List[Event] = []

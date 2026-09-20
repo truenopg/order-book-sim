@@ -17,7 +17,8 @@ from simple order-flow rules.
   - `InformedTrader` knows a random-walk fundamental value and pushes the
     price toward it when the mid drifts too far.
 - **Replayable event log**: every order, cancel, and trade is recorded, so any
-  run can be reconstructed exactly.
+  run can be reconstructed exactly (`examples/replay_log.py` saves a JSONL log
+  and rebuilds the book from the file, verifying a tick-for-tick match).
 - **Microstructure metrics**: spread distribution, realized volatility, book
   imbalance, and a signed price-impact proxy (correlation between trade sign
   and the subsequent mid move).
@@ -93,13 +94,12 @@ lob/book.py      matching engine + book state
 lob/agents.py    order-flow agents
 lob/sim.py       simulation loop
 lob/metrics.py   microstructure statistics
-examples/        runnable demo
+examples/        runnable demo + experiments
 tests/           unittest suite
 ```
 
 ## Roadmap
 
-- Replay from a saved event-log file (the replay engine exists; file I/O next)
 - LOBSTER/ITCH message import for real-data replay
 - Latency and queue-position modelling
 - Spoofing/quote-stuffing stress tests
